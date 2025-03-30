@@ -1,13 +1,19 @@
 {
   "name": "ui-library-converter",
   "version": "1.0.0",
+  "description": "A tool to migrate ShadCN UI to other UI libraries",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "dependencies": {
-    "electron": "^latest",
-    "fs-extra": "^latest",
-    "inquirer": "^latest"
+    "electron": "^28.2.3",  
+    "fs-extra": "^11.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "electron-builder": "^24.6.0"
   }
 }
