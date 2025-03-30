@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UI Library Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f4f4f4;
+      padding: 20px;
+    }
+    h2 { color: #333; }
+    #drop-zone {
+      border: 2px dashed #007BFF;
+      padding: 20px;
+      width: 80%;
+      margin: auto;
+      background: #fff;
+      cursor: pointer;
+    }
+    select, button {
+      margin-top: 15px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #status { margin-top: 15px; color: green; }
+    .footer {
+      margin-top: 30px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h2>UI Library Converter</h2>
+  
+  <div id="drop-zone" onclick="selectFolder()">📂 Drag and drop a project folder here or click to select</div>
+
+  <select id="ui-library">
+    <option value="Material-UI">Material-UI</option>
+    <option value="Ant Design">Ant Design</option>
+    <option value="Chakra UI">Chakra UI</option>
+  </select>
+
+  <button onclick="sendSelection()">Convert</button>
+
+  <div id="status"></div>
+
+  <div class="footer">Made with ❤️ Kushagra</div>
+
+  <script>
+    const { ipcRenderer } = require("electron");
+    let selectedFolder = null;
+
+    function selectFolder() {
+      ipcRenderer.send("open-folder-dialog");
+    }
+
+    ipcRenderer.on("selected-folder", (event, folderPath) => {
+      selectedFolder = folderPath;
+      document.getElementById("drop-zone").innerText = "📁 Selected: " + folderPath;
+    });
+
+    function sendSelection() {
+      const library = document.getElementById("ui-library").value;
+      if (!selectedFolder) {
+        alert("Please select a project folder first!");
+        return;
+      }
+      document.getElementById("status").innerText = "Processing...";
+      ipcRenderer.send("library-selected", { library, folder: selectedFolder });
+    }
+
+    ipcRenderer.on("conversion-done", (event, message) => {
+      document.getElementById("status").innerText = message;
+    });
+  </script>
+</body>
+</html>
