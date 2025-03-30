@@ -16,7 +16,7 @@ A desktop application that helps developers convert UI components between differ
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/ui-library-converter.git
+git clone https://github.com/kush-cpu/ui-library-converter.git
 ```
 
 2. Install dependencies:
