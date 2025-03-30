@@ -1,7 +1,5 @@
 const { app, BrowserWindow, ipcMain, dialog } = require("electron");
-const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
+const { convertProject } = require("./converter");
 
 let mainWindow;
 
@@ -9,11 +7,10 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 600,
     height: 500,
-    title: "UI Library Converter",
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
-    },
+    webPreferences: { 
+      nodeIntegration: true, 
+      contextIsolation: false 
+    }
   });
 
   mainWindow.loadFile("index.html");
@@ -21,19 +18,18 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
-ipcMain.on("open-folder-dialog", (event) => {
-  dialog.showOpenDialog({ properties: ["openDirectory"] }).then((result) => {
-    if (!result.canceled) {
-      event.sender.send("selected-folder", result.filePaths[0]);
-    }
-  });
+ipcMain.on("open-folder-dialog", async (event) => {
+  const result = await dialog.showOpenDialog({ properties: ["openDirectory"] });
+  if (!result.canceled && result.filePaths.length > 0) {
+    event.sender.send("selected-folder", result.filePaths[0]);
+  }
 });
 
-ipcMain.on("library-selected", (event, { library, folder }) => {
-  console.log(`🔄 Converting UI components to: ${library}`);
-  
-  // Example placeholder logic: (Replace with actual conversion logic)
-  setTimeout(() => {
-    event.sender.send("conversion-done", `Conversion to ${library} completed!`);
-  }, 3000);
+ipcMain.on("library-selected", async (event, { library, folder }) => {
+  try {
+    convertProject(folder, library);  // Call conversion function
+    event.sender.send("conversion-done", `✅ Conversion to ${library} completed!`);
+  } catch (error) {
+    event.sender.send("conversion-done", `❌ Error: ${error.message}`);
+  }
 });
